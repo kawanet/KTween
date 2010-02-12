@@ -1,8 +1,9 @@
 #!/bin/sh
 
+dest=~/Desktop
 date=`date '+%Y%m%d%H'`
 name=KTween-$date
-arc=$name.tar.gz
+arc=$dest/$name.tar.gz
 
 [ -e $name ] && exit 1
 
