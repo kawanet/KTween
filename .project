@@ -16,9 +16,14 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>extlib</name>
+			<type>2</type>
+			<locationURI>extlib</locationURI>
+		</link>
+		<link>
 			<name>playerglobal.swc</name>
 			<type>1</type>
-			<locationURI>Flex_3_SDK_0/frameworks/libs/player/9/playerglobal.swc</locationURI>
+			<locationURI>Flex_3_SDK_0/frameworks/libs/player/10/playerglobal.swc</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
