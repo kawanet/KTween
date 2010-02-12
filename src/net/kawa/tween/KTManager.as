@@ -1,6 +1,6 @@
 ﻿package net.kawa.tween {
 	import flash.utils.setTimeout;
-	import flash.display.DisplayObject;
+	import flash.display.Sprite;
 	import flash.events.Event;
 
 	/**
@@ -10,21 +10,16 @@
 	 * @see reference 	net.kawa.tween.KTJob
 	 */
 	public class KTManager {
-		private var stage:DisplayObject;
+		private var stage:Sprite;
 		private var running:Boolean = false;
-		private var jobList:Array = new Array();
+		private var jobList:Array;
 
 		/**
 		 * Constructs a new KTManager instance.
-		 *
-		 * @param stage 	The stage invokes ENTER_FRAME event.
 		 **/
-		public function KTManager(stage:DisplayObject):void {
-			if (stage == null) {
-				throw new Error('stage is null.');
-				return;
-			}
-			this.stage = stage;
+		public function KTManager():void {
+			stage = new Sprite();
+			jobList = new Array();
 		}
 
 		/**

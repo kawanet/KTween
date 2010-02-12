@@ -16,8 +16,6 @@ package {
 		}
 
 		private function addedToStageHandler(event:Event):void {
-			KTween.init(stage);
-			
 			var easeIn:KTweenEaseTest = new KTweenEaseTest(); 
 			var easeOut:KTweenEaseTest = new KTweenEaseTest(); 
 			var easeInOut:KTweenEaseTest = new KTweenEaseTest(); 

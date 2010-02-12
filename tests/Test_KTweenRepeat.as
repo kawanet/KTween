@@ -18,8 +18,6 @@ package {
 		}
 
 		private function addedToStageHandler(event:Event):void {
-			KTween.init(stage);
-			
 			var normal:Circle = new Circle();
 			var repeat:Circle = new Circle();
 			var yoyo:Circle = new Circle();

@@ -2,7 +2,6 @@ package {
 	import flash.events.Event;
 	import flash.display.Sprite;
 
-	import net.kawa.tween.KTween;
 	import net.kawa.tween.easing.*;
 
 	[SWF(width="1000",height="510",frameRate="30",backgroundColor="#FFFFFF")]
@@ -16,18 +15,16 @@ package {
 		}
 
 		private function addedToStageHandler(event:Event):void {
-			KTween.init(stage);
-			
 			var linear:TestEaseLine = new TestEaseLine(net.kawa.tween.easing.Linear, 0);
 			var sine:TestEaseLine = new TestEaseLine(net.kawa.tween.easing.Sine, 100);
-			var cubic:TestEaseLine = new TestEaseLine(net.kawa.tween.easing.Cubic, 200);
-			var quad:TestEaseLine = new TestEaseLine(net.kawa.tween.easing.Quad, 300);
+			var quad:TestEaseLine = new TestEaseLine(net.kawa.tween.easing.Quad, 200);
+			var cubic:TestEaseLine = new TestEaseLine(net.kawa.tween.easing.Cubic, 300);
 			var quart:TestEaseLine = new TestEaseLine(net.kawa.tween.easing.Quart, 400);
 			var quint:TestEaseLine = new TestEaseLine(net.kawa.tween.easing.Quint, 500);
 			var circ:TestEaseLine = new TestEaseLine(net.kawa.tween.easing.Circ, 600);
 			var elastic:TestEaseLine = new TestEaseLine(net.kawa.tween.easing.Elastic, 700);
-			var back:TestEaseLine = new TestEaseLine(net.kawa.tween.easing.Back, 800);
-			var bounce:TestEaseLine = new TestEaseLine(net.kawa.tween.easing.Bounce, 900);
+			var bounce:TestEaseLine = new TestEaseLine(net.kawa.tween.easing.Bounce, 800);
+			var back:TestEaseLine = new TestEaseLine(net.kawa.tween.easing.Back, 900);
 			
 			addChild(linear);
 			addChild(sine);
@@ -63,15 +60,12 @@ package {
 }
 
 import flash.utils.setTimeout;
-
-import net.kawa.tween.easing.Linear;
-
 import flash.text.TextField;
-
-import net.kawa.tween.KTween;
-
 import flash.events.Event;
 import flash.display.Sprite;
+
+import net.kawa.tween.easing.Linear;
+import net.kawa.tween.KTween;
 
 class TestEaseLine extends Sprite {
 	private var duration:Number = 2;

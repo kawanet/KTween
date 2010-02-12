@@ -1,5 +1,4 @@
 package net.kawa.tween {
-	import flash.display.DisplayObject;
 
 	/**
 	 * Tween frontend class for ease of use
@@ -12,16 +11,7 @@ package net.kawa.tween {
 		/**
 		 * The global KTManager instance.
 		 */
-		static public var manager:KTManager;
-
-		/**
-		 * Initializes the global KTManager instance with the stage object specified.
-		 * 
-		 * @param stage DisplayObject to invoke ENTER_FRAME events.
-		 */
-		static public function init(stage:DisplayObject):void {
-			manager = new KTManager(stage);
-		}
+		static public var manager:KTManager = new KTManager();
 
 		/**
 		 * Starts a new KTween job specifying the first (begging) status.
@@ -35,10 +25,6 @@ package net.kawa.tween {
 		 * @return			The KTween job instance.
 		 */
 		static public function from(target:*, duration:Number, from:Object, ease:Function = null, callback:Function = null):KTJob {
-			if (!manager) {
-				throw new Error('Call KTween.init before use it.');
-				return null;
-			}
 			var job:KTJob = new KTJob(target);
 			job.from = from;
 			job.duration = duration;
@@ -60,10 +46,6 @@ package net.kawa.tween {
 		 * @return			The KTween job instance.
 		 */
 		static public function to(target:*, duration:Number, to:Object, ease:Function = null, callback:Function = null):KTJob {
-			if (!manager) {
-				throw new Error('Call KTween.init before use it.');
-				return null;
-			}
 			var job:KTJob = new KTJob(target);
 			job.to = to;
 			job.duration = duration;
@@ -85,10 +67,6 @@ package net.kawa.tween {
 		 * @return			The KTween job instance.
 		 */
 		static public function fromTo(target:*, duration:Number, from:Object, to:Object, ease:Function = null, callback:Function = null):KTJob {
-			if (!manager) {
-				throw new Error('Call KTween.init before use it.');
-				return null;
-			}
 			var job:KTJob = new KTJob(target);
 			job.from = from;
 			job.to = to;
