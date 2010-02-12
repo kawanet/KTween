@@ -89,6 +89,10 @@ class BenchBase extends Sprite {
 	private var frame:Number = 0;
 	protected var bmList:Array = [];
 	public var fps:Number;
+	private static var inited:Boolean = false;
+	private static var yList0:Array = [];
+	private static var yList1:Array = [];
+	private static var secList:Array = [];
 
 	public function BenchBase() {
 		var i:int;
@@ -109,17 +113,28 @@ class BenchBase extends Sprite {
 		}
 			
 		addEventListener(Event.ENTER_FRAME, enterFrameHandler, false, 0, true);
-			
+		
+		if (!inited) init();
+
 		startTime = getTime();
 		for(i = 0;i < bmList.length;i++) {
+			var mc:DisplayObject = bmList[i];
+			mc.x = -IWIDTH;
+			mc.y = yList0[i];
+			runTween(mc, yList1[i], secList[i]);
+		}
+	}
+
+	private function init():void {
+		for(var i:int = 0;i < bmList.length;i++) {
 			var y0:Number = Math.floor(Math.random() * SHEIGHT);
 			var y1:Number = Math.floor(Math.random() * SHEIGHT);
 			var secs:Number = Math.random() * (MAXSEC - MINSEC) + MINSEC;
-			var mc:DisplayObject = bmList[i];
-			mc.x = -IWIDTH;
-			mc.y = y0;
-			runTween(mc, y1, secs);
+			yList0.push(y0);
+			yList1.push(y1);
+			secList.push(secs);
 		}
+		inited = true;
 	}
 
 	protected function runTween(mc:DisplayObject, lastY:Number, secs:Number):void {
@@ -149,10 +164,12 @@ class BenchBase extends Sprite {
 }
 
 class BenchKTween extends BenchBase {
+	import net.kawa.tween.KTJob;
 	import net.kawa.tween.KTween;
 	import net.kawa.tween.easing.Linear;
 	protected override function runTween(mc:DisplayObject, lastY:Number, secs:Number):void {
-		KTween.to(mc, secs, {x: SWIDTH, y: lastY}, Linear.easeOut, countDone).round = true;
+		var tween:KTJob = KTween.to(mc, secs, {x: SWIDTH, y: lastY}, Linear.easeOut, countDone);
+		tween.round = true;
 	}
 }
 
@@ -167,15 +184,21 @@ class BenchTweenNano extends BenchBase {
 	import com.greensock.TweenNano;
 	import com.greensock.easing.Linear;
 	protected override function runTween(mc:DisplayObject, lastY:Number, secs:Number):void {
+		// TweenNano doesn't have the roundProps feature.
+		// TweenMax.to(mc, secs, {x: SWIDTH, y:lastY, roundProps:["x","y"], ease:Linear.easeNone, onComplete:countDone});
 		TweenNano.to(mc, secs, {x: SWIDTH, y:lastY, ease:Linear.easeNone, onComplete:countDone});
 	}
 }
 
 class BenchGTween extends BenchBase {
+	import com.gskinner.motion.GTween;
 	import com.gskinner.motion.GTweener;
 	import com.gskinner.motion.easing.Linear;
 	protected override function runTween(mc:DisplayObject, lastY:Number, secs:Number):void {
-		GTweener.to(mc, secs, {x: SWIDTH, y:lastY}, {ease:Linear.easeNone}).onComplete = countDone;
+		var tween:GTween = GTweener.to(mc, secs, {x: SWIDTH, y:lastY}, {ease:Linear.easeNone});
+		// tween.roundValues = true; // the feature lost?
+		// tween.useSnapping = true;
+		tween.onComplete = countDone;
 	}
 }
 

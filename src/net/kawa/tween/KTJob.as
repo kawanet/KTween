@@ -189,8 +189,8 @@
 		}
 
 		protected function update(pos:Number):void {
-			if (propList == null) return;
-			if (target == null) return;
+			if (!propList) return;
+
 			var prop:_KTProperty;
 			var i:int = propList.length;
 			if (round) {
@@ -213,8 +213,8 @@
 			if (!initialized) return;
 			if (finished) return;
 			if (canceled) return;
-			if (to == null) return;
-			if (target == null) return;
+			if (!to) return;
+			if (!target) return;
 			
 			for (var key:String in to) {
 				target[key] = to[key];
@@ -233,8 +233,8 @@
 		public function cancel():void {
 			if (!initialized) return;
 			if (canceled) return;
-			if (from == null) return;
-			if (target == null) return;
+			if (!from) return;
+			if (!target) return;
 			
 			for (var key:String in to) {
 				target[key] = from[key];

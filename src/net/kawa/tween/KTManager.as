@@ -55,7 +55,7 @@
 		}
 
 		private function enterFrameHandler(e:Event):void {
-			if (jobList == null) return;
+			if (!jobList) return;
 			
 			// close jobs finished
 			var i:int = jobList.length;
