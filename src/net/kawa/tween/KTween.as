@@ -13,7 +13,10 @@ package net.kawa.tween {
 		/**
 		 * The global KTManager instance.
 		 */
-		static public var manager:KTManager = new KTManager();
+		static private var manager:KTManager = new KTManager();
+		/**
+		 * KTJob class to create KTJob instances. KTJob is default.
+		 */
 		static public var jobClass:Class = KTJob;
 
 		/**

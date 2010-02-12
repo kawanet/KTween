@@ -103,7 +103,7 @@
 			initialized = true;
 			
 			// activated
-			if (onInit != null) {
+			if (onInit as Function) {
 				onInit();
 				onInit = null;
 			}
@@ -115,23 +115,27 @@
 			var prop:_KTProperty;
 			if (from != null && to != null) {
 				for (key in from) {
-					prop = new _KTProperty(key, from[key], to[key]);
-					propList.push(prop);
 					target[key] = from[key];
 				}
 			} else if (from == null && to != null) {
 				from = new Object();
 				for (key in to) {
-					prop = new _KTProperty(key, target[key], to[key]);
-					propList.push(prop);
+					from[key] = target[key];
 				}
 			} else if (from != null && to == null) {
 				to = new Object();
 				for (key in from) {
-					prop = new _KTProperty(key, from[key], target[key]);
-					propList.push(prop);
+					to[key] = target[key];
 					target[key] = from[key];
 				}
+			} else if (from == null && to == null) {
+				// empty tweening means delaying
+				from = new Object();
+				to = new Object();
+			}
+			for (key in to) {
+				prop = new _KTProperty(key, from[key], to[key]);
+				propList.push(prop);
 			}
 		}
 
@@ -185,6 +189,8 @@
 		}
 
 		protected function update(pos:Number):void {
+			if (propList == null) return;
+			if (target == null) return;
 			var prop:_KTProperty;
 			var i:int = propList.length;
 			if (round) {
@@ -207,12 +213,15 @@
 			if (!initialized) return;
 			if (finished) return;
 			if (canceled) return;
+			if (to == null) return;
+			if (target == null) return;
 			
 			for (var key:String in to) {
 				target[key] = to[key];
 			}
+
 			finished = true;
-			if (onComplete != null) {
+			if (onComplete as Function) {
 				onComplete();
 				onComplete = null;
 			}
@@ -224,13 +233,16 @@
 		public function cancel():void {
 			if (!initialized) return;
 			if (canceled) return;
+			if (from == null) return;
+			if (target == null) return;
 			
 			for (var key:String in to) {
 				target[key] = from[key];
 			}
+			
 			finished = true;
 			canceled = true;
-			if (onCancel != null) {
+			if (onCancel as Function) {
 				onCancel();
 				onCancel = null;
 			}
@@ -244,7 +256,7 @@
 			if (canceled) return;
 			
 			finished = true;
-			if (onClose != null) {
+			if (onClose as Function) {
 				onClose();
 			}
 			onInit = null;
