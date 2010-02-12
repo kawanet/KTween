@@ -1,4 +1,6 @@
 package net.kawa.tween {
+	import net.kawa.tween.KTJob;
+	import net.kawa.tween.KTManager;
 
 	/**
 	 * Tween frontend class for ease of use
@@ -12,6 +14,7 @@ package net.kawa.tween {
 		 * The global KTManager instance.
 		 */
 		static public var manager:KTManager = new KTManager();
+		static public var jobClass:Class = KTJob;
 
 		/**
 		 * Starts a new KTween job specifying the first (begging) status.
@@ -25,12 +28,12 @@ package net.kawa.tween {
 		 * @return			The KTween job instance.
 		 */
 		static public function from(target:*, duration:Number, from:Object, ease:Function = null, callback:Function = null):KTJob {
-			var job:KTJob = new KTJob(target);
+			var job:KTJob = new jobClass(target);
 			job.from = from;
 			job.duration = duration;
 			if (ease != null) job.ease = ease;
 			job.onClose = callback;
-			manager.queue(job);
+			queue(job);
 			return job;
 		}
 
@@ -46,12 +49,12 @@ package net.kawa.tween {
 		 * @return			The KTween job instance.
 		 */
 		static public function to(target:*, duration:Number, to:Object, ease:Function = null, callback:Function = null):KTJob {
-			var job:KTJob = new KTJob(target);
+			var job:KTJob = new jobClass(target);
 			job.to = to;
 			job.duration = duration;
 			if (ease != null) job.ease = ease;
 			job.onClose = callback;
-			manager.queue(job);
+			queue(job);
 			return job;
 		}
 
@@ -67,14 +70,24 @@ package net.kawa.tween {
 		 * @return			The KTween job instance.
 		 */
 		static public function fromTo(target:*, duration:Number, from:Object, to:Object, ease:Function = null, callback:Function = null):KTJob {
-			var job:KTJob = new KTJob(target);
+			var job:KTJob = new jobClass(target);
 			job.from = from;
 			job.to = to;
 			job.duration = duration;
 			if (ease != null) job.ease = ease;
 			job.onClose = callback;
-			manager.queue(job);
+			queue(job);
 			return job;
+		}
+
+		/**
+		 * Regists a new tween job to the job queue.
+		 *
+		 * @param job 		A job to be added to queue
+		 * @param delay 	
+		 **/
+		static public function queue(job:KTJob, delay:Number = 0):void {
+			manager.queue(job, delay);
 		}
 
 		/**

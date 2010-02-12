@@ -3,6 +3,8 @@
 	import flash.display.Sprite;
 	import flash.events.Event;
 
+	import net.kawa.tween.KTJob;
+
 	/**
 	 * Tween job manager class
 	 * @author Yusuke Kawasaki
@@ -23,7 +25,7 @@
 		}
 
 		/**
-		 * Enqueue a new tween job.
+		 * Regists a new tween job to the job queue.
 		 *
 		 * @param job 		A job to be added to queue
 		 * @param delay 	
@@ -37,7 +39,7 @@
 				setTimeout(closure, delay * 1000);
 				return;
 			}
-			jobList.push(job);
+			jobList.unshift(job);
 			if (!running) awake();
 		}
 
@@ -52,15 +54,10 @@
 			running = false;
 		}
 
-		/* not used at the time
-		private function restart():void {
-		sleep();
-		awake();
-		}
-		 */
 		private function enterFrameHandler(e:Event):void {
 			// close jobs finished
-			for (var i:int = jobList.length - 1;i >= 0;i--) {
+			var i:int = jobList.length;
+			while (i--) {
 				var job:KTJob = jobList[i];
 				if (job == null) {
 					// invalid job however
@@ -81,18 +78,22 @@
 		}
 
 		private function step():void {
-			var last:uint = jobList.length;
-			for (var i:uint = 0;i < last;i++) {
+			var i:int = jobList.length;
+			var date:Date = new Date();
+			var curTime:Number = date.time;
+			while (i--) {
 				var job:KTJob = jobList[i];
-				job.step();
+				job.step(curTime);
 			}
 		}
 
 		/**
-		 * Terminates all tween jobs immediately
+		 * Terminates all tween jobs immediately.
 		 */
 		public function abort():void {
-			for each (var job:KTJob in jobList) {
+			var i:int = jobList.length;
+			while (i--) {
+				var job:KTJob = jobList[i];
 				job.abort();
 			}
 		}
@@ -101,7 +102,9 @@
 		 * Stops and rollbacks to the first (begging) status of all tween jobs.
 		 */
 		public function cancel():void {
-			for each (var job:KTJob in jobList) {
+			var i:int = jobList.length;
+			while (i--) {
+				var job:KTJob = jobList[i];
 				job.cancel();
 			}
 		}
@@ -110,7 +113,9 @@
 		 * Forces to finish all tween jobs.
 		 */
 		public function complete():void {
-			for each (var job:KTJob in jobList) {
+			var i:int = jobList.length;
+			while (i--) {
+				var job:KTJob = jobList[i];
 				job.complete();
 			}
 		}

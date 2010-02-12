@@ -76,6 +76,7 @@
 		private var canceled:Boolean = false;
 		private var startTime:Number;
 		private var lastTime:Number;
+		private var propList:Array = new Array();
 
 		/**
 		 * Constructs a new KTJob instance.
@@ -83,7 +84,7 @@
 		 * @param target 	The object whose properties will be tweened.
 		 * @param name 		The name of the tween job. Defaults to null.
 		 **/
-		public function KTJob(target:*, name:String = null):void {
+		public final function KTJob(target:*, name:String = null):void {
 			this.name = name;
 			this.target = target;
 		}
@@ -108,35 +109,36 @@
 			}
 		}
 
-		private function setupValues():void {
+		protected function setupValues():void {
 			var key:String;
 
+			var prop:_KTProperty;
 			if (from != null && to != null) {
 				for (key in from) {
+					prop = new _KTProperty(key, from[key], to[key]);
+					propList.push(prop);
 					target[key] = from[key];
 				}
 			} else if (from == null && to != null) {
 				from = new Object();
 				for (key in to) {
-					from[key] = target[key];
+					prop = new _KTProperty(key, target[key], to[key]);
+					propList.push(prop);
 				}
 			} else if (from != null && to == null) {
 				to = new Object();
 				for (key in from) {
-					to[key] = target[key];
+					prop = new _KTProperty(key, from[key], target[key]);
+					propList.push(prop);
 					target[key] = from[key];
 				}
-			} else if (from == null && to == null) {
-				// empty tweening means delaying
-				from = new Object();
-				to = new Object();
 			}
 		}
 
 		/**
 		 * Steps a sequence invoked by ENTER_FRAME events.
 		 */
-		public function step():void {
+		public function step(curTime:Number = 0):void {
 			if (finished) return;
 			if (canceled) return;
 			
@@ -147,8 +149,10 @@
 			}
 			
 			// get current time
-			var date:Date = new Date();
-			var curTime:Number = date.time;
+			if (curTime == 0) {
+				var date:Date = new Date();
+				curTime = date.time;
+			}
 
 			// check finished
 			var secs:Number = (curTime - startTime) * 0.001;
@@ -177,14 +181,21 @@
 			if (ease != null) {
 				pos = ease(pos);
 			}
-			var key:String;
+			update(pos);
+		}
+
+		protected function update(pos:Number):void {
+			var prop:_KTProperty;
+			var i:int = propList.length;
 			if (round) {
-				for (key in to) {
-					target[key] = Math.round(from[key] + (to[key] - from[key]) * pos); 
-				} 
+				while (i--) {
+					prop = propList[i];
+					target[prop.key] = Math.round(prop.from + prop.diff * pos);
+				}
 			} else {
-				for (key in to) {
-					target[key] = from[key] + (to[key] - from[key]) * pos; 
+				while (i--) {
+					prop = propList[i];
+					target[prop.key] = prop.from + prop.diff * pos;
 				}
 			}
 		}
@@ -249,5 +260,17 @@
 			finished = true;
 			canceled = true;
 		}
+	}
+}
+
+final class _KTProperty {
+	public var key:String;
+	public var from:Number;
+	public var diff:Number;
+
+	public function _KTProperty(key:String, from:Number, to:Number):void {
+		this.key = key;
+		this.from = from;
+		this.diff = to - from;
 	}
 }

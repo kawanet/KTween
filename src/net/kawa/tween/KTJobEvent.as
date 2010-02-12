@@ -11,6 +11,16 @@ package net.kawa.tween {
 	 */
 	public class KTJobEvent extends KTJob {
 		/**
+		 * Constructs a new KTJobEvent instance.
+		 *
+		 * @param target 	The object whose properties will be tweened.
+		 * @param name 		The name of the tween job. Defaults to null.
+		 **/
+		public final function KTJobEvent(target:*, name:String = null):void {
+			super(target, name);
+		}
+
+		/**
 		 * Invokes an Event.INIT event after onInit() function called.
 		 */
 		public override function init():void {
