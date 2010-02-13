@@ -1,4 +1,5 @@
 package {
+	import flash.utils.setTimeout;
 	import flash.text.TextField;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -63,7 +64,8 @@ package {
 			// remove test sprite
 			removeChild(canvas);
 			canvas = null;
-			runTween();
+			
+			setTimeout(runTween, 1000);
 		}
 	}
 }
