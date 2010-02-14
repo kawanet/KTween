@@ -78,7 +78,7 @@ import flash.display.Bitmap;
 import flash.display.Sprite;
 
 class BenchBase extends Sprite {
-	private static const MAXOBJ:Number = 500;
+	private static const MAXOBJ:Number = 2000;
 	protected static const SWIDTH:Number = 320;
 	protected static const SHEIGHT:Number = 480;
 	protected static const IWIDTH:Number = 16;
