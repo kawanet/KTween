@@ -88,8 +88,17 @@ package net.kawa.tween {
 		 *
 		 * @param job 		A job to be added to queue
 		 * @param delay 	
+		 * @throws ArgumentError A Function instance is not allowed for the .from or .to property.
 		 **/
 		static public function queue(job:KTJob, delay:Number = 0):void {
+			if (job.from is Function) {
+				throw new ArgumentError('Function is not allowed for the .from property.');
+				return;
+			}
+			if (job.to is Function) {
+				throw new ArgumentError('Function is not allowed for the .to property.');
+				return;
+			}
 			manager.queue(job, delay);
 		}
 
