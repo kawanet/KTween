@@ -5,6 +5,47 @@
 	import net.kawa.tween.easing.Quad;
 
 	/**
+	 * Dispatched when the tween job has just started.<br/>
+	 * Note this would not work with KTween's static methods, 
+	 * ex. <code>KTween.fromTo()</code>,
+	 * as these methods start a job at the same time.
+	 *
+	 * @eventType flash.events.Event.INIT
+	 */
+	[Event(name="init", type="flash.events.Event")]
+
+	/**
+	 * Dispatched when the value chaned.
+	 *
+	 * @eventType flash.events.Event.CAHNGE
+	 */
+	[Event(name="change", type="flash.events.Event")]
+
+	/**
+	 * Dispatched when the tween job has just completed.<br/>
+	 * Note this would be invoked before the Flash Player renders the object 
+	 * at the final position.
+	 *
+	 * @eventType flash.events.Event.COMPLETE
+	 */
+	[Event(name="complete", type="flash.events.Event")]
+
+	/**
+	 * Dispatched when the tween job is closing.<br/>
+	 * Note this would be invoked at the next <code>ENTER_FRAME</code> event of onComplete.
+	 *
+	 * @eventType flash.events.Event.CLOSE
+	 */
+	[Event(name="close", type="flash.events.Event")]
+
+	/**
+	 * Dispatched when the tween job is canceled.
+	 *
+	 * @eventType flash.events.Event.CANCEL
+	 */
+	[Event(name="cancel", type="flash.events.Event")]
+
+	/**
 	 * KTJob
 	 * Tween job calss for the KTween
 	 * @author Yusuke Kawasaki
@@ -55,27 +96,31 @@
 		 */
 		public var yoyo:Boolean = false;
 		/**
-		 * The callback function invoked when the job has just started.
+		 * The callback function invoked when the tween job has just started.<br/>
+		 * Note this would not work with KTween's static methods, 
+		 * ex. <code>KTween.fromTo()</code>,
+		 * as these methods start a job at the same time.
 		 */
-		public var onInit:Function;         // job just started
+		public var onInit:Function;
 		/**
 		 * The callback function invoked when the value chaned.
 		 */
 		public var onChange:Function;
 		/**
-		 * The callback function invoked when the job has just completed.
-		 * Note this may be invoked before Flash renders the object.
+		 * The callback function invoked when the tween job has just completed.<br/>
+		 * Note this would be invoked before the Flash Player renders the object 
+		 * at the final position.
 		 */
-		public var onComplete:Function;		// soon after job done
+		public var onComplete:Function;
 		/**
-		 * The callback function invoked when the job is closing.
-		 * Note this is invoked in the next ENTER_FRAME event of onComplete.
+		 * The callback function invoked when the tween job is closing.<br/>
+		 * Note this would be invoked at the next <code>ENTER_FRAME</code> event of onComplete.
 		 */
-		public var onClose:Function;		// job done
+		public var onClose:Function;
 		/**
-		 * The callback function invoked when the job is canceled.
+		 * The callback function invoked when the tween job is canceled.
 		 */
-		public var onCancel:Function;		// job canceled
+		public var onCancel:Function;
 		/**
 		 * Arguments for onInit callback function.
 		 */
@@ -131,7 +176,6 @@
 			// activated
 			if (onInit is Function) {
 				onInit.apply(onInit, onInitParams);
-				onInit = null;
 			}
 			if (invokeEvent) {
 				var event:Event = new Event(Event.INIT);
@@ -146,7 +190,7 @@
 			var key:String;
 			var prop:_KTProperty;
 			if (from != null && to != null) {
-				setFirstValues();
+				applyFirstValues();
 			} else if (from == null && to != null) {
 				from = new Object();
 				for (key in to) {
@@ -157,7 +201,7 @@
 				for (key in from) {
 					to[key] = target[key];
 				}
-				setFirstValues();
+				applyFirstValues();
 			} else if (from == null && to == null) {
 				// empty tweening means delaying
 				from = new Object();
@@ -170,7 +214,7 @@
 			}
 		}
 
-		private function setFirstValues():void {
+		private function applyFirstValues():void {
 			for (var key:String in from) {
 				target[key] = from[key];
 			}
@@ -183,7 +227,7 @@
 			}
 		}
 
-		private function setFinalValues():void {
+		private function applyFinalValues():void {
 			for (var key:String in to) {
 				target[key] = to[key];
 			}
@@ -283,12 +327,11 @@
 			if (!to) return;
 			if (!target) return;
 			
-			setFinalValues();
+			applyFinalValues();
 
 			finished = true;
 			if (onComplete is Function) {
 				onComplete.apply(onComplete, onCompleteParams);
-				onComplete = null;
 			}
 			if (invokeEvent) {
 				var event:Event = new Event(Event.COMPLETE);
@@ -305,13 +348,12 @@
 			if (!from) return;
 			if (!target) return;
 			
-			setFirstValues();
+			applyFirstValues();
 			
 			finished = true;
 			canceled = true;
 			if (onCancel is Function) {
 				onCancel.apply(onCancel, onCancelParams);
-				onCancel = null;
 			}
 			if (invokeEvent) {
 				var event:Event = new Event(Event.CANCEL);
@@ -329,7 +371,6 @@
 			finished = true;
 			if (onClose is Function) {
 				onClose.apply(onClose, onCloseParams);
-				onClose = null;
 			}
 			if (invokeEvent) {
 				var event:Event = new Event(Event.CLOSE);
@@ -347,6 +388,13 @@
 			onComplete = null;
 			onCancel = null;
 			onClose = null;
+			onInitParams = null;
+			onChangeParams = null;
+			onCompleteParams = null;
+			onCloseParams = null;
+			onCancelParams = null;
+			propList = null;
+			invokeEvent = false;
 		}
 
 		/**

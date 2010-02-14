@@ -171,7 +171,7 @@ package {
 			KTween.abort();
 			var job:KTJob = KTween.to(colorTrans, 1, KTUtil.resetColorTransform(), Linear.easeOut);
 			job.onChange = updateColorTransform;
-			textField.text = 'KTColorTransformUtil.reset()';
+			textField.text = 'KTUtil.resetColorTransform()';
 		}
 
 		private function changeColor(event:MouseEvent):void {

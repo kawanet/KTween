@@ -1,4 +1,5 @@
 package {
+	import flash.display.DisplayObject;
 	import flash.events.MouseEvent;
 	import flash.utils.setTimeout;
 	import flash.text.TextFormat;
@@ -58,34 +59,34 @@ package {
 		}
 
 		private function run1():void {
-			var ball1:Circle = new Circle();
-			ball1.y = 100;
-			plane.addChild(ball1);
-			var job:KTJob = KTween.to(ball1, duration, {x:320}, Quad.easeOut);
+			var ball:Circle = new Circle();
+			ball.y = 100;
+			plane.addChild(ball);
+			var job:KTJob = KTween.to(ball, duration, {x:320}, Quad.easeOut);
 			setupEvent(job, 1);
 		}
 
 		private function run2():void {
-			var ball2:Circle = new Circle();
-			ball2.y = 200;
-			plane.addChild(ball2);
-			var job:KTJob = KTween.from(ball2, duration, {x:320}, Quad.easeOut);
+			var ball:Circle = new Circle();
+			ball.y = 200;
+			plane.addChild(ball);
+			var job:KTJob = KTween.from(ball, duration, {x:320}, Quad.easeOut);
 			setupEvent(job, 2);
 		}
 
 		private function run3():void {
-			var ball3:Circle = new Circle();
-			ball3.y = 300;
-			plane.addChild(ball3);
-			var job:KTJob = KTween.fromTo(ball3, duration, {x:320}, {x:0}, Quad.easeOut);
+			var ball:Circle = new Circle();
+			ball.y = 300;
+			plane.addChild(ball);
+			var job:KTJob = KTween.fromTo(ball, duration, {x:0}, {x:320}, Quad.easeOut);
 			setupEvent(job, 3);
 		}
 
 		private function run4():void {
-			var ball4:Circle = new Circle();
-			ball4.y = 400;
-			plane.addChild(ball4);
-			var job:KTJob = KTween.fromTo(ball4, duration, {x:0}, {x:320}, Quad.easeOut);
+			var ball:Circle = new Circle();
+			ball.y = 400;
+			plane.addChild(ball);
+			var job:KTJob = KTween.fromTo(ball, duration, {x:320}, {x:0}, Quad.easeOut);
 			setupEvent(job, 4);
 		}
 
@@ -104,11 +105,13 @@ package {
 			job.addEventListener(Event.CLOSE, eventHandler);
 			job.addEventListener(Event.CANCEL, eventHandler);
 			
-			job.step();
+//			job.step();
 		}
 
 		private function eventHandler(event:Event):void {
-			var text:String = 'event: ' + event.type + ' ' + event.target + '\n';
+			var job:KTJob = event.target as KTJob;
+			var sprite:DisplayObject = job.target as DisplayObject;
+			var text:String = 'event: ' + event.type + ' ' + sprite.x + '\n';
 			textField.appendText(text);
 		}
 
@@ -120,7 +123,7 @@ package {
 		private function drawTextField():TextField {
 			var sp:TextField = new TextField();
 			sp.multiline = false;
-			var textFormat:TextFormat = new TextFormat('_sans', 14, 0);
+			var textFormat:TextFormat = new TextFormat('_sans', 16, 0);
 			sp.defaultTextFormat = textFormat;
 			sp.width = stage.stageWidth;
 			sp.height = stage.stageHeight;

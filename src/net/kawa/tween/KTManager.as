@@ -39,6 +39,7 @@
 				setTimeout(closure, delay * 1000);
 				return;
 			}
+			job.init();
 			jobList.unshift(job);
 			if (!running) awake();
 		}
