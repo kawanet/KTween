@@ -97,9 +97,13 @@ class TestEaseLine extends Sprite {
 		KTween.to(easeOut, duration, {curX:140}, Linear.easeOut);
 		KTween.to(easeInOut, duration, {curX:140}, Linear.easeOut);
 
-		KTween.from(easeIn, duration, {curY:90}, easeClass['easeIn']).onInit = easeIn.onActivate;
-		KTween.from(easeOut, duration, {curY:90}, easeClass['easeOut']).onInit = easeOut.onActivate;
-		KTween.from(easeInOut, duration, {curY:90}, easeClass['easeInOut']).onInit = easeInOut.onActivate;
+		KTween.from(easeIn, duration, {curY:90}, easeClass['easeIn']);
+		KTween.from(easeOut, duration, {curY:90}, easeClass['easeOut']);
+		KTween.from(easeInOut, duration, {curY:90}, easeClass['easeInOut']);
+		
+		easeIn.save();
+		easeOut.save();
+		easeInOut.save();
 	}
 }
 
@@ -110,23 +114,20 @@ class KTweenEaseTest extends Sprite {
 	public var curY:Number = 0;
 
 	public function KTweenEaseTest():void {
-		
 		graphics.lineStyle(1.0, 0x000000, 1, true);
 		graphics.drawRect(0, 0, 140, 90);
-		
 		addEventListener(Event.ENTER_FRAME, update);
 	}
 
-	public function onActivate():void {
+	private function update(e:Event):void {
+		graphics.lineStyle(2.0, 0x2020C0, 1.0);
+		graphics.moveTo(prevX, prevY);
+		graphics.lineTo(curX, curY);
 		prevX = curX;
 		prevY = curY;
 	}
 
-	private function update(e:Event):void {
-		if (prevX == curX && prevY == curY)return;
-		graphics.lineStyle(2.0, 0x2020C0, 1.0);
-		graphics.moveTo(prevX, prevY);
-		graphics.lineTo(curX, curY);
+	public function save():void {
 		prevX = curX;
 		prevY = curY;
 	}

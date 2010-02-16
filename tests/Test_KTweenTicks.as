@@ -8,34 +8,38 @@ package {
 	import net.kawa.tween.KTween;
 	import net.kawa.tween.easing.Linear;
 
-	[SWF(width="320",height="480",frameRate="10",backgroundColor="#FFFFFF")]
+	[SWF(width="320",height="480",frameRate="30",backgroundColor="#FFFFFF")]
 
 	/**
 	 * @author Yusuke Kawasaki
 	 */
 	public class Test_KTweenTicks extends Sprite {
 		private var tf:TextField;
+		private var startTime:Number;
 		private var objA:TestObject;
 		private var objB:TestObject;
-		private var startTime:Number;
+		private var objC:TestObject;
 
 		public function Test_KTweenTicks():void {
-			startTime = getTime();
-			addEventListener(Event.EXIT_FRAME, exitFrameListener);
 			addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
 		}
 
 		private function addedToStageHandler(event:Event):void {
 			removeEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
-			
+
 			tf = drawTextField();
 			addChild(tf);
 
-			objA = new TestObject();
-			objB = new TestObject();
+			objA = new TestObject('A');
+			objB = new TestObject('B');
+			objC = new TestObject('C');
+
+			startTime = getTime();
+			addEventListener(Event.EXIT_FRAME, exitFrameListener);
 			
-			setTimeout(runTestA, 1);
-			setTimeout(runTestB, 401);
+			setTimeout(runTestA, 100);
+			setTimeout(runTestB, 300);
+			setTimeout(runTestC, 500);
 		}
 
 		private function getTime():Number {
@@ -45,7 +49,7 @@ package {
 
 		private function exitFrameListener(event:Event):void {
 			showStatus();
-			if (objB.x >= 1) {
+			if (objC.x >= 1) {
 				removeEventListener(Event.EXIT_FRAME, exitFrameListener);
 			}
 		}
@@ -53,13 +57,13 @@ package {
 		private function showStatus():void {
 			var numA:String = numFormat(objA.x);
 			var numB:String = numFormat(objB.x);
-			var str:String = getSec() + '\tA:' + numA + '\tB:' + numB + '\n';
+			var numC:String = numFormat(objC.x);
+			var str:String = getSec() + ' \tA:' + numA + ' \tB:' + numB  + ' \tC:' + numC + '\n';
 			tf.appendText(str);
 		}
 
 		private function getSec():String {
 			var time:Number = (getTime() - startTime) / 1000;
-			// time = Math.round(time * 100) / 100;
 			var sec:String = numFormat(time);
 			return sec;
 		}
@@ -72,28 +76,31 @@ package {
 			return str;
 		}
 
+		private function runTest(obj:TestObject):void {
+			tf.appendText(getSec() + '\t' + obj.name + ':start\n');
+			KTween.fromTo(obj, 1, {x:0}, {x:1}, Linear.easeOut, onClose).onCloseParams = [obj];
+		}
+
 		private function runTestA():void {
-			tf.appendText(getSec() + '\tA:start\n');
-			KTween.fromTo(objA, 1, {x:0}, {x:1}, Linear.easeOut, onCloseA);
+			runTest(objA);
 		}
 
 		private function runTestB():void {
-			tf.appendText(getSec() + '\tB:start\n');
-			KTween.fromTo(objB, 1, {x:0}, {x:1}, Linear.easeOut, onCloseB);
+			runTest(objB);
 		}
 
-		private function onCloseA():void {
-			tf.appendText(getSec() + '\tA:done\n');
+		private function runTestC():void {
+			runTest(objC);
 		}
 
-		private function onCloseB():void {
-			tf.appendText(getSec() + '\tB:done\n');
+		private function onClose(obj:TestObject):void {
+			tf.appendText(getSec() + '\t' + obj.name + ':done\n');
 		}
 
 		private function drawTextField():TextField {
 			var sp:TextField = new TextField();
 			sp.multiline = false;
-			var textFormat:TextFormat = new TextFormat('_sans', 16, 0);
+			var textFormat:TextFormat = new TextFormat('_sans', 14, 0);
 			sp.defaultTextFormat = textFormat;
 			sp.width = stage.stageWidth;
 			sp.height = stage.stageHeight;
@@ -104,5 +111,10 @@ package {
 }
 
 class TestObject {
+	public var name:String;
 	public var x:Number = Number.NaN;
+
+	public function TestObject(name:String) {
+		this.name = name;
+	}
 }

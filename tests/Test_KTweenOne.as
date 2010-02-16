@@ -26,15 +26,20 @@ package {
 			addChild(easeIn);
 			addChild(easeOut);
 			addChild(easeInOut);
+
 			var duration:Number = 2;
 
 			KTween.to(easeIn, duration, {curX:320}, Linear.easeOut);
 			KTween.to(easeOut, duration, {curX:320}, Linear.easeOut);
 			KTween.to(easeInOut, duration, {curX:320}, Linear.easeOut);
 
-			KTween.from(easeIn, duration, {curY:150}, Back.easeIn).onInit = easeIn.onActivate;
-			KTween.from(easeOut, duration, {curY:150}, Back.easeOut).onInit = easeOut.onActivate;
-			KTween.from(easeInOut, duration, {curY:150}, Back.easeInOut).onInit = easeInOut.onActivate;
+			KTween.from(easeIn, duration, {curY:150}, Back.easeIn);
+			KTween.from(easeOut, duration, {curY:150}, Back.easeOut);
+			KTween.from(easeInOut, duration, {curY:150}, Back.easeInOut);
+			
+			easeIn.save();
+			easeOut.save();
+			easeInOut.save();
 		}
 	}
 }
@@ -49,23 +54,20 @@ class KTweenEaseTest extends Sprite {
 	public var curY:Number = 0;
 
 	public function KTweenEaseTest():void {
-		
 		graphics.lineStyle(1.0, 0x000000, 1, true);
 		graphics.drawRect(0, 0, 320, 150);
-		
 		addEventListener(Event.ENTER_FRAME, update);
 	}
 
-	public function onActivate():void {
+	private function update(e:Event):void {
+		graphics.lineStyle(2.0, 0x2020C0, 1.0);
+		graphics.moveTo(prevX, prevY);
+		graphics.lineTo(curX, curY);
 		prevX = curX;
 		prevY = curY;
 	}
 
-	private function update(e:Event):void {
-		if (prevX == curX && prevY == curY)return;
-		graphics.lineStyle(2.0, 0x2020C0, 1.0);
-		graphics.moveTo(prevX, prevY);
-		graphics.lineTo(curX, curY);
+	public function save():void {
 		prevX = curX;
 		prevY = curY;
 	}

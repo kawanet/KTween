@@ -153,10 +153,8 @@
 		 * Constructs a new KTJob instance.
 		 *
 		 * @param target 	The object whose properties will be tweened.
-		 * @param name 		The name of the tween job. Defaults to null.
 		 **/
-		public final function KTJob(target:*, name:String = null):void {
-			this.name = name;
+		public final function KTJob(target:*):void {
 			this.target = target;
 		}
 

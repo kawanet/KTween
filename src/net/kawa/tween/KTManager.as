@@ -14,14 +14,14 @@
 	public class KTManager {
 		private var stage:Sprite;
 		private var running:Boolean = false;
-		private var jobList:Array;
+		private var jobList:Array = new Array();
+		private var jobAdded:Array = new Array();
 
 		/**
 		 * Constructs a new KTManager instance.
 		 **/
 		public function KTManager():void {
 			stage = new Sprite();
-			jobList = new Array();
 		}
 
 		/**
@@ -40,7 +40,7 @@
 				return;
 			}
 			job.init();
-			jobList.unshift(job);
+			jobAdded.unshift(job);
 			if (!running) awake();
 		}
 
@@ -57,27 +57,41 @@
 
 		private function enterFrameHandler(e:Event):void {
 			if (!jobList) return;
+			if (!jobAdded) return;
 			
 			// close jobs finished
 			var i:int = jobList.length;
 			while (i--) {
 				var job:KTJob = jobList[i];
 				if (job == null) {
-					// invalid job however
+					// an invalid job instance however
 					jobList.splice(i, 1);
 				} else if (job.finished) {
 					jobList.splice(i, 1);
 					job.close();
 				}
 			}
-
-			// all jobs done
+			
+			// check new jobs added
+			if (jobAdded.length > 0) {
+				jobList.unshift.apply(jobList, jobAdded);
+				jobAdded.length = 0;
+			}
+			
+			// check all jobs done
 			if (jobList.length < 1) {
 				sleep();
 				return;
 			}
 			
+			// tick
 			step();
+			
+			// check new jobs added in the step above
+			if (jobAdded.length > 0) {
+				jobList.unshift.apply(jobList, jobAdded);
+				jobAdded.length = 0;
+			}
 		}
 
 		private function step():void {
