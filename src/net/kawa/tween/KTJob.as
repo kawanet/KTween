@@ -163,13 +163,18 @@
 		/**
 		 * Initializes from/to values of the tween job.
 		 */
-		public function init():void {
+		public function init(curTime:Number = -1):void {
 			if (initialized) return;
 			if (finished) return;
 			if (canceled) return;
 
-			var date:Date = new Date();
-			startTime = date.time;
+			// get current time
+			if (curTime < 0) {
+				var date:Date = new Date();
+				curTime = date.time;
+			}
+			startTime = curTime;
+
 			setupValues();
 			initialized = true;
 			
@@ -241,24 +246,29 @@
 		}
 
 		/**
-		 * Steps a sequence invoked by ENTER_FRAME events.
+		 * Steps the sequence by every ticks invoked by ENTER_FRAME event.
+		 * @param curTime The current time in milliseconds since the epoch. Optional.
 		 */
-		public function step(curTime:Number = 0):void {
+		public function step(curTime:Number = -1):void {
 			if (finished) return;
 			if (canceled) return;
 			
-			// not started yet
-			if (!initialized) {
-				init();
-				return;
-			}
-			
 			// get current time
-			if (curTime == 0) {
+			if (curTime < 0) {
 				var date:Date = new Date();
 				curTime = date.time;
 			}
+			
+			// not started yet
+			if (!initialized) {
+				init(curTime);
+				return;
+			}
 
+			// check invoked in the same time
+			if (lastTime == curTime) return;
+			lastTime = curTime;
+			
 			// check finished
 			var secs:Number = (curTime - startTime) * 0.001;
 			if (secs >= duration) {
@@ -273,10 +283,6 @@
 					return;
 				}
 			}
-			
-			// check invoked in the same time
-			if (lastTime == curTime) return;
-			lastTime = curTime;
 			
 			// tweening
 			var pos:Number = secs / duration;
