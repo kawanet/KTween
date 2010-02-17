@@ -102,6 +102,7 @@
 		 * Terminates all tween jobs immediately.
 		 */
 		public function abort():void {
+			mergeList();
 			var i:int = jobList.length;
 			while (i--) {
 				var job:KTJob = jobList[i];
@@ -113,6 +114,7 @@
 		 * Stops and rollbacks to the first (begging) status of all tween jobs.
 		 */
 		public function cancel():void {
+			mergeList();
 			var i:int = jobList.length;
 			while (i--) {
 				var job:KTJob = jobList[i];
@@ -124,6 +126,7 @@
 		 * Forces to finish all tween jobs.
 		 */
 		public function complete():void {
+			mergeList();
 			var i:int = jobList.length;
 			while (i--) {
 				var job:KTJob = jobList[i];
@@ -135,6 +138,7 @@
 		 * Pauses all tween jobs.
 		 */
 		public function pause():void {
+			mergeList();
 			var i:int = jobList.length;
 			while (i--) {
 				var job:KTJob = jobList[i];
@@ -146,11 +150,18 @@
 		 * Proceeds with all tween jobs paused.
 		 */
 		public function resume():void {
+			// mergeList(); // this isn't needed
 			var i:int = jobList.length;
 			while (i--) {
 				var job:KTJob = jobList[i];
 				job.resume();
 			}
+		}
+
+		private function mergeList():void {
+			if (jobAdded.length == 0) return;
+			jobList.unshift.apply(jobList, jobAdded);
+			jobAdded.length = 0;
 		}
 	}
 }
