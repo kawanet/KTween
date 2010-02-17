@@ -121,6 +121,20 @@ package net.kawa.tween {
 		 */
 		static public function complete():void {
 			manager.complete();
+		}		
+
+		/**
+		 * Pauses all tween jobs.
+		 */
+		static public function pause():void {
+			manager.pause();
+		}		
+
+		/**
+		 * Proceeds with all tween jobs paused.
+		 */
+		static public function resume():void {
+			manager.resume();
 		}
 	}
 }

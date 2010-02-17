@@ -59,6 +59,7 @@ package {
 	}
 }
 
+import flash.text.TextFormat;
 import flash.utils.setTimeout;
 import flash.text.TextField;
 import flash.events.Event;
@@ -74,6 +75,8 @@ class TestEaseLine extends Sprite {
 	public function TestEaseLine(ease:Class, delay:Number):void {
 		easeClass = ease;
 		var field:TextField = new TextField();
+		var textFormat:TextFormat = new TextFormat('_sans', 12, 0);
+		field.defaultTextFormat = textFormat;
 		field.text = [easeClass].join("").replace(/class /i, "").replace(/\W+/g, "");
 		addChild(field);
 		field.x = 5;

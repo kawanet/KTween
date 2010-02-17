@@ -144,6 +144,7 @@
 		private var reverse:Boolean = false;
 		private var initialized:Boolean = false;
 		private var canceled:Boolean = false;
+		private var pausing:Boolean = false;
 		private var startTime:Number;
 		private var lastTime:Number;
 		private var propList:Array = new Array();
@@ -165,11 +166,11 @@
 			if (initialized) return;
 			if (finished) return;
 			if (canceled) return;
+			if (pausing) return;
 
 			// get current time
 			if (curTime < 0) {
-				var date:Date = new Date();
-				curTime = date.time;
+				curTime = getTime();
 			}
 			startTime = curTime;
 
@@ -250,11 +251,11 @@
 		public function step(curTime:Number = -1):void {
 			if (finished) return;
 			if (canceled) return;
+			if (pausing) return;
 			
 			// get current time
 			if (curTime < 0) {
-				var date:Date = new Date();
-				curTime = date.time;
+				curTime = getTime();
 			}
 			
 			// not started yet
@@ -408,6 +409,34 @@
 			finished = true;
 			canceled = true;
 			clearnup();
+		}
+
+		/**
+		 * Pauses the tween job.
+		 */
+		public function pause():void {
+			if (pausing) return;
+			pausing = true;
+			lastTime = getTime();
+		}
+
+		/**
+		 * Proceeds with the tween jobs paused.
+		 */
+		public function resume():void {
+			if (!pausing) return;
+			pausing = false;
+			var curTime:Number = getTime();
+			startTime = curTime - (lastTime - startTime);
+			step(curTime);
+		}
+
+		/**
+		 * @private
+		 */
+		protected function getTime():Number {
+			var date:Date = new Date();
+			return date.time;
 		}
 
 		/**

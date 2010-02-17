@@ -130,5 +130,27 @@
 				job.complete();
 			}
 		}
+
+		/**
+		 * Pauses all tween jobs.
+		 */
+		public function pause():void {
+			var i:int = jobList.length;
+			while (i--) {
+				var job:KTJob = jobList[i];
+				job.pause();
+			}
+		}
+
+		/**
+		 * Proceeds with all tween jobs paused.
+		 */
+		public function resume():void {
+			var i:int = jobList.length;
+			while (i--) {
+				var job:KTJob = jobList[i];
+				job.resume();
+			}
+		}
 	}
 }

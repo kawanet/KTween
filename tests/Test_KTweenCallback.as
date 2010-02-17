@@ -54,7 +54,13 @@ package {
 				finished = false;
 				addedToStageHandler(event);
 			} else {
-				KTween.cancel();
+				if (event.altKey) {
+					KTween.abort();
+				} else if (event.shiftKey) {
+					KTween.complete();
+				} else {
+					KTween.cancel();
+				}
 			}
 		}
 
@@ -91,7 +97,7 @@ package {
 		}
 
 		private function setupEvent(job:KTJob, id:int):void {
-			job.onInit = callback;
+			job.onInit = callback; // these not work
 			job.onInitParams = [id, 'onInit'];
 			job.onComplete = callback;
 			job.onCompleteParams = [id, 'onComplete'];
@@ -104,8 +110,6 @@ package {
 			job.addEventListener(Event.COMPLETE, eventHandler);
 			job.addEventListener(Event.CLOSE, eventHandler);
 			job.addEventListener(Event.CANCEL, eventHandler);
-			
-//			job.step();
 		}
 
 		private function eventHandler(event:Event):void {
@@ -127,7 +131,10 @@ package {
 			sp.defaultTextFormat = textFormat;
 			sp.width = stage.stageWidth;
 			sp.height = stage.stageHeight;
-			sp.text = 'KTween callback/event test:\n\n';
+			sp.text = 'KTween callback/event test\n';
+			sp.appendText('Click: cancel()\n');
+			sp.appendText('Shift+Click: complete()\n');
+			sp.appendText('Alt+Click: abort()\n\n');
 			return sp;
 		}
 	}
