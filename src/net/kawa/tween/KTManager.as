@@ -86,12 +86,6 @@
 			
 			// tick
 			step();
-			
-			// check new jobs added in the step above
-			if (jobAdded.length > 0) {
-				jobList.unshift.apply(jobList, jobAdded);
-				jobAdded.length = 0;
-			}
 		}
 
 		private function step():void {
