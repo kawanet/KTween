@@ -20,12 +20,12 @@ package net.kawa.tween {
 		static public var jobClass:Class = KTJob;
 
 		/**
-		 * Starts a new KTween job specifying the first (begging) status.
+		 * Starts a new KTween job specifying the first (beginning) status.
 		 * The last (ending) status will be back the current status.
 		 * 
 		 * @param target   	The target object to be tweened.
 		 * @param duration 	The length of the tween in seconds.
-		 * @param from 	 	The object which contains the first (begging) status in each property.
+		 * @param from 	 	The object which contains the first (beginning) status in each property.
 		 * @param ease 	 	The easing equation function. Quad.easeOut is default.
 		 * @param callback	The callback function invoked after the tween completed as onClose.
 		 * @return			The KTween job instance.
@@ -42,7 +42,7 @@ package net.kawa.tween {
 
 		/**
 		 * Starts a new KTween job specifying the last (ending) status.
-		 * The current status is used as the first (begging) status.
+		 * The current status is used as the first (beginning) status.
 		 * 
 		 * @param target   	The target object to be tweened.
 		 * @param duration 	The length of the tween in seconds.
@@ -66,7 +66,7 @@ package net.kawa.tween {
 		 * 
 		 * @param target   	The target object to be tweened.
 		 * @param duration 	The length of the tween in seconds.
-		 * @param from 	 	The object which contains the first (begging) status in each property.
+		 * @param from 	 	The object which contains the first (beginning) status in each property.
 		 * @param to 	 	The object which contains the last (ending) status in each property.
 		 * @param ease 	 	The easing equation function. Quad.easeOut is default.
 		 * @param callback	The callback function invoked after the tween completed as onClose.
@@ -110,7 +110,7 @@ package net.kawa.tween {
 		}
 
 		/**
-		 * Stops and rollbacks to the first (begging) status of all tween jobs.
+		 * Stops and rollbacks to the first (beginning) status of all tween jobs.
 		 */
 		static public function cancel():void {
 			manager.cancel();

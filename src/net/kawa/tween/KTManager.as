@@ -111,7 +111,7 @@
 		}
 
 		/**
-		 * Stops and rollbacks to the first (begging) status of all tween jobs.
+		 * Stops and rollbacks to the first (beginning) status of all tween jobs.
 		 */
 		public function cancel():void {
 			mergeList();

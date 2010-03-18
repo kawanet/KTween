@@ -65,7 +65,7 @@
 		 */
 		public var target:*;
 		/**
-		 * The object which contains the first (begging) status in each property.
+		 * The object which contains the first (beginning) status in each property.
 		 * In case of null, the current propeties would be copied from the target object.
 		 */
 		public var from:Object;
@@ -87,7 +87,7 @@
 		 */
 		public var round:Boolean = false;
 		/**
-		 * Set true to repeat the tween from the begging after finished.
+		 * Set true to repeat the tween from the beginning after finished.
 		 */
 		public var repeat:Boolean = false;
 		/**
@@ -345,7 +345,7 @@
 		}
 
 		/**
-		 * Stops and rollbacks to the first (begging) status of the tween job.
+		 * Stops and rollbacks to the first (beginning) status of the tween job.
 		 */
 		public function cancel():void {
 			if (!initialized) return;
