@@ -1,4 +1,5 @@
 ﻿package net.kawa.tween {
+	import flash.utils.getTimer;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 
@@ -49,7 +50,7 @@
 	 * KTJob
 	 * Tween job calss for the KTween
 	 * @author Yusuke Kawasaki
-	 * @version 1.0
+	 * @version 1.0.1
 	 */
 	public class KTJob extends EventDispatcher {
 		/**
@@ -147,8 +148,9 @@
 		private var pausing:Boolean = false;
 		private var startTime:Number;
 		private var lastTime:Number;
-		private var propList:Array = new Array();
+		private var firstProp:_KTProperty;
 		private var invokeEvent:Boolean = false;
+		public var next:KTJob;
 
 		/**
 		 * Constructs a new KTJob instance.
@@ -161,6 +163,8 @@
 
 		/**
 		 * Initializes from/to values of the tween job.
+		 * @param curTime The current time in milliseconds given by getTimer() method. Optional.
+		 * @see flash.utils.#getTimer()
 		 */
 		public function init(curTime:Number = -1):void {
 			if (initialized) return;
@@ -170,7 +174,7 @@
 
 			// get current time
 			if (curTime < 0) {
-				curTime = getTime();
+				curTime = getTimer();
 			}
 			startTime = curTime;
 
@@ -187,40 +191,34 @@
 			}
 		}
 
-		/**
-		 * @private
-		 */
-		protected function setupValues():void {
-			var key:String;
-			var prop:_KTProperty;
-			if (from != null && to != null) {
-				applyFirstValues();
-			} else if (from == null && to != null) {
-				from = new Object();
-				for (key in to) {
-					from[key] = target[key];
+		private function setupValues():void {
+			var first:Object = (from != null) ? from : target;
+			var last:Object = (to != null) ? to : target;
+			var keys:Object = (to != null) ? to : from;
+			if (keys == null) return;
+
+			var p:_KTProperty;
+			var lastProp:_KTProperty;
+			for (var key:String in keys) {
+				if (first[key] == last[key]) continue; // skip this
+				p = new _KTProperty(key, first[key], last[key]);
+				if (firstProp == null) {
+					firstProp = p;
+				} else {
+					lastProp.next = p;
 				}
-			} else if (from != null && to == null) {
-				to = new Object();
-				for (key in from) {
-					to[key] = target[key];
-				}
-				applyFirstValues();
-			} else if (from == null && to == null) {
-				// empty tweening means delaying
-				from = new Object();
-				to = new Object();
+				lastProp = p;
 			}
-			for (key in to) {
-				if (from[key] == to[key]) continue; // skip this
-				prop = new _KTProperty(key, from[key], to[key]);
-				propList.push(prop);
+			if (from != null) {
+				applyFirstValues();
 			}
 		}
 
 		private function applyFirstValues():void {
-			for (var key:String in from) {
-				target[key] = from[key];
+			var p:_KTProperty = firstProp;
+			while (p != null) {
+				target[p.key] = p.from;
+				p = p.next;
 			}
 			if (onChange is Function) {
 				onChange.apply(onChange, onChangeParams);
@@ -232,8 +230,10 @@
 		}
 
 		private function applyFinalValues():void {
-			for (var key:String in to) {
-				target[key] = to[key];
+			var p:_KTProperty = firstProp;
+			while (p != null) {
+				target[p.key] = p.to;
+				p = p.next;
 			}
 			if (onChange is Function) {
 				onChange.apply(onChange, onChangeParams);
@@ -246,7 +246,8 @@
 
 		/**
 		 * Steps the sequence by every ticks invoked by ENTER_FRAME event.
-		 * @param curTime The current time in milliseconds since the epoch. Optional.
+		 * @param curTime The current time in milliseconds given by getTimer() method. Optional.
+		 * @see flash.utils.#getTimer()
 		 */
 		public function step(curTime:Number = -1):void {
 			if (finished) return;
@@ -255,7 +256,7 @@
 			
 			// get current time
 			if (curTime < 0) {
-				curTime = getTime();
+				curTime = getTimer();
 			}
 			
 			// not started yet
@@ -298,19 +299,18 @@
 		 * @private
 		 */
 		protected function update(pos:Number):void {
-			if (!propList) return;
+			if (firstProp == null) return;
 
-			var prop:_KTProperty;
-			var i:int = propList.length;
+			var p:_KTProperty = firstProp;
 			if (round) {
-				while (i--) {
-					prop = propList[i];
-					target[prop.key] = Math.round(prop.from + prop.diff * pos);
+				while (p != null) {
+					target[p.key] = Math.round(p.from + p.diff * pos);
+					p = p.next;
 				}
 			} else {
-				while (i--) {
-					prop = propList[i];
-					target[prop.key] = prop.from + prop.diff * pos;
+				while (p != null) {
+					target[p.key] = p.from + p.diff * pos;
+					p = p.next;
 				}
 			}
 			if (onChange is Function) {
@@ -329,7 +329,7 @@
 			if (!initialized) return;
 			if (finished) return;
 			if (canceled) return;
-			if (!to) return;
+			// if (!to) return;
 			if (!target) return;
 			
 			applyFinalValues();
@@ -350,7 +350,7 @@
 		public function cancel():void {
 			if (!initialized) return;
 			if (canceled) return;
-			if (!from) return;
+			// if (!from) return;
 			if (!target) return;
 			
 			applyFirstValues();
@@ -398,7 +398,7 @@
 			onCompleteParams = null;
 			onCloseParams = null;
 			onCancelParams = null;
-			propList = null;
+			firstProp = null;
 			invokeEvent = false;
 		}
 
@@ -417,7 +417,7 @@
 		public function pause():void {
 			if (pausing) return;
 			pausing = true;
-			lastTime = getTime();
+			lastTime = getTimer();
 		}
 
 		/**
@@ -426,17 +426,9 @@
 		public function resume():void {
 			if (!pausing) return;
 			pausing = false;
-			var curTime:Number = getTime();
+			var curTime:Number = getTimer();
 			startTime = curTime - (lastTime - startTime);
 			step(curTime);
-		}
-
-		/**
-		 * @private
-		 */
-		protected function getTime():Number {
-			var date:Date = new Date();
-			return date.time;
 		}
 
 		/**
@@ -449,14 +441,18 @@
 	}
 }
 
-final class _KTProperty {
+internal final class _KTProperty {
 	public var key:String;
 	public var from:Number;
+	public var to:Number;
 	public var diff:Number;
+	public var next:_KTProperty;
 
-	public function _KTProperty(key:String, from:Number, to:Number):void {
+	public function _KTProperty(key:String, from:Number, to:Number, next:_KTProperty = null):void {
 		this.key = key;
 		this.from = from;
+		this.to = to;
 		this.diff = to - from;
+		this.next = next;
 	}
 }

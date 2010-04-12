@@ -1,4 +1,5 @@
 ﻿package net.kawa.tween {
+	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -8,14 +9,16 @@
 	/**
 	 * Tween job manager class
 	 * @author Yusuke Kawasaki
-	 * @version 1.0
-	 * @see reference 	net.kawa.tween.KTJob
+	 * @version 1.0.1
+	 * @see net.kawa.tween.KTJob
 	 */
 	public class KTManager {
 		private var stage:Sprite;
 		private var running:Boolean = false;
-		private var jobList:Array = new Array();
-		private var jobAdded:Array = new Array();
+		private var firstJob:KTJob;
+		private var lastJob:KTJob;
+		private var firstAdded:KTJob;
+		private var lastAdded:KTJob;
 
 		/**
 		 * Constructs a new KTManager instance.
@@ -40,7 +43,13 @@
 				return;
 			}
 			job.init();
-			jobAdded.unshift(job);
+			if (lastAdded != null) {
+				lastAdded.next = job;
+			} else {
+				firstAdded = job;
+			}
+			lastAdded = job;
+
 			if (!running) awake();
 		}
 
@@ -56,30 +65,33 @@
 		}
 
 		private function enterFrameHandler(e:Event):void {
-			if (!jobList) return;
-			if (!jobAdded) return;
-			
 			// close jobs finished
-			var i:int = jobList.length;
-			while (i--) {
-				var job:KTJob = jobList[i];
-				if (job == null) {
-					// an invalid job instance however
-					jobList.splice(i, 1);
-				} else if (job.finished) {
-					jobList.splice(i, 1);
+			var prev:KTJob = null;
+			var job:KTJob = firstJob;
+			while (job != null) {
+				if (job.finished) {
+					if (prev == null) {
+						firstJob = job.next;
+					} else {
+						prev.next = job.next;
+					}
+					if (job.next == null) {
+						lastJob = prev;
+					}
 					job.close();
+				} else {
+					prev = job;
 				}
+				job = job.next;
 			}
-			
+
 			// check new jobs added
-			if (jobAdded.length > 0) {
-				jobList.unshift.apply(jobList, jobAdded);
-				jobAdded.length = 0;
+			if (firstAdded != null) {
+				mergeList();
 			}
 			
 			// check all jobs done
-			if (jobList.length < 1) {
+			if (firstJob == null) {
 				sleep();
 				return;
 			}
@@ -89,79 +101,89 @@
 		}
 
 		private function step():void {
-			var i:int = jobList.length;
-			var date:Date = new Date();
-			var curTime:Number = date.time;
-			while (i--) {
-				var job:KTJob = jobList[i];
+			var curTime:Number = getTimer();
+			var job:KTJob = firstJob;
+			while (job != null) {
 				job.step(curTime);
+				job = job.next;
 			}
 		}
 
 		/**
 		 * Terminates all tween jobs immediately.
+		 * @see net.kawa.tween.KTJob#abort()
 		 */
 		public function abort():void {
 			mergeList();
-			var i:int = jobList.length;
-			while (i--) {
-				var job:KTJob = jobList[i];
+			var job:KTJob = firstJob;
+			while (job != null) {
 				job.abort();
+				job = job.next;
 			}
 		}
 
 		/**
 		 * Stops and rollbacks to the first (beginning) status of all tween jobs.
+		 * @see net.kawa.tween.KTJob#cancel()
 		 */
 		public function cancel():void {
 			mergeList();
-			var i:int = jobList.length;
-			while (i--) {
-				var job:KTJob = jobList[i];
+			var job:KTJob = firstJob;
+			while (job != null) {
 				job.cancel();
+				job = job.next;
 			}
 		}
 
 		/**
 		 * Forces to finish all tween jobs.
+		 * @see net.kawa.tween.KTJob#complete()
 		 */
 		public function complete():void {
 			mergeList();
-			var i:int = jobList.length;
-			while (i--) {
-				var job:KTJob = jobList[i];
+			var job:KTJob = firstJob;
+			while (job != null) {
 				job.complete();
+				job = job.next;
 			}
 		}
 
 		/**
 		 * Pauses all tween jobs.
+		 * @see net.kawa.tween.KTJob#pause()
 		 */
 		public function pause():void {
 			mergeList();
-			var i:int = jobList.length;
-			while (i--) {
-				var job:KTJob = jobList[i];
+			var job:KTJob = firstJob;
+			while (job != null) {
 				job.pause();
+				job = job.next;
 			}
 		}
 
 		/**
 		 * Proceeds with all tween jobs paused.
+		 * @see net.kawa.tween.KTJob#resume()
 		 */
 		public function resume():void {
 			// mergeList(); // this isn't needed
-			var i:int = jobList.length;
-			while (i--) {
-				var job:KTJob = jobList[i];
+			var job:KTJob = firstJob;
+			while (job != null) {
 				job.resume();
+				job = job.next;
 			}
 		}
 
 		private function mergeList():void {
-			if (jobAdded.length == 0) return;
-			jobList.unshift.apply(jobList, jobAdded);
-			jobAdded.length = 0;
+			if (!firstAdded) return;
+			if (lastJob != null) {
+				lastJob.next = firstAdded;	
+			} else {
+				firstJob = firstAdded;
+			}
+			lastJob = lastAdded;
+			firstAdded = null;
+			lastAdded = null;
 		}
 	}
 }

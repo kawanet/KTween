@@ -5,9 +5,9 @@ package net.kawa.tween {
 	/**
 	 * Tween frontend class for ease of use
 	 * @author Yusuke Kawasaki
-	 * @version 1.0
-	 * @see reference 	net.kawa.tween.KTManager
-	 * @see reference 	net.kawa.tween.KTJob
+	 * @version 1.0.1
+	 * @see net.kawa.tween.KTManager
+	 * @see net.kawa.tween.KTJob
 	 */
 	public class KTween {
 		/**
@@ -104,6 +104,7 @@ package net.kawa.tween {
 
 		/**
 		 * Terminates all tween jobs immediately
+		 * @see net.kawa.tween.KTJob#abort()
 		 */
 		static public function abort():void {
 			manager.abort();
@@ -111,6 +112,7 @@ package net.kawa.tween {
 
 		/**
 		 * Stops and rollbacks to the first (beginning) status of all tween jobs.
+		 * @see net.kawa.tween.KTJob#cancel()
 		 */
 		static public function cancel():void {
 			manager.cancel();
@@ -118,6 +120,7 @@ package net.kawa.tween {
 
 		/**
 		 * Forces to finish all tween jobs.
+		 * @see net.kawa.tween.KTJob#complete()
 		 */
 		static public function complete():void {
 			manager.complete();
@@ -125,6 +128,7 @@ package net.kawa.tween {
 
 		/**
 		 * Pauses all tween jobs.
+		 * @see net.kawa.tween.KTJob#pause()
 		 */
 		static public function pause():void {
 			manager.pause();
@@ -132,6 +136,7 @@ package net.kawa.tween {
 
 		/**
 		 * Proceeds with all tween jobs paused.
+		 * @see net.kawa.tween.KTJob#resume()
 		 */
 		static public function resume():void {
 			manager.resume();

@@ -1,4 +1,6 @@
 package {
+	import flash.text.TextFormat;
+	import flash.system.Capabilities;
 	import flash.utils.setTimeout;
 	import flash.text.TextField;
 	import flash.display.Sprite;
@@ -12,19 +14,24 @@ package {
 	public class Benchmark extends Sprite {
 		private var canvas:BenchBase;
 		private var textField:TextField;
-		private var classList:Array = [BenchKTween, BenchTweener, BenchTweenNano, BenchGTween, BenchBetweenAS3];
-		// private var classList:Array = [BenchKTween, BenchTweenNano, BenchBetweenAS3];
-		// private var classList:Array = [BenchKTween];
+		private var classList:Array;
 		private var count:Number = 0;
 
 		public function Benchmark():void {
+			// classList = [BenchKTween, BenchTweener, BenchTweenNano, BenchGTween, BenchBetweenAS3, BenchEazeTween];
+			classList = [BenchKTween, BenchBetweenAS3, BenchEazeTween];
+			// classList = [BenchKTween, BenchEazeTween];
+			// classList = [BenchKTween];
 			addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
 		}
 
 		private function addedToStageHandler(event:Event):void {
+			var textFormat:TextFormat = new TextFormat('_sans', 12);
 			textField = new TextField();
 			textField.width = stage.stageWidth;
 			textField.height = stage.stageHeight;
+			textField.defaultTextFormat = textFormat;
+			textField.cacheAsBitmap = true;
 			addChild(textField);
 
 			runTween();
@@ -55,10 +62,12 @@ package {
 		private function doneTween(event:Event):void {
 			canvas.removeEventListener(Event.COMPLETE, doneTween);
 			
-			// show FPT
-			textField.appendText(canvas.fps + ' fps\r\n');
+			// show FPS
+			textField.appendText(canvas.fps + ' fps\n');
+			// the first tween may take time
 			if (count == 1) {
-				textField.text = ""; // the first tween would take time
+				var debug:String = Capabilities.isDebugger ? ' (debugger)' : '';
+				textField.text = Capabilities.version + debug + '\n';
 			}
 			
 			// remove test sprite
@@ -70,6 +79,8 @@ package {
 	}
 }
 
+import flash.utils.getTimer;
+import flash.display.PixelSnapping;
 import flash.display.DisplayObject;
 import flash.events.Event;
 import flash.geom.Rectangle;
@@ -78,14 +89,14 @@ import flash.display.Bitmap;
 import flash.display.Sprite;
 
 class BenchBase extends Sprite {
-	private static const MAXOBJ:Number = 2000;
+	private static const MAXOBJ:Number = 4000;
 	protected static const SWIDTH:Number = 320;
 	protected static const SHEIGHT:Number = 480;
-	protected static const IWIDTH:Number = 16;
-	protected static const IHEIGHT:Number = 16;
+	protected static const IWIDTH:Number = 8;
+	protected static const IHEIGHT:Number = 8;
 	protected static const MINSEC:Number = 2;
 	protected static const MAXSEC:Number = 6;
-	private static const COLORPAT:Array = [0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0xFF00FF, 0x00FFFF];
+	private static var COLORPAT:Array;
 	private var count:Number = 0;
 	private var startTime:Number;
 	private var frame:Number = 0;
@@ -99,16 +110,25 @@ class BenchBase extends Sprite {
 	public function BenchBase() {
 		var i:int;
 		var bmdList:Array = [];
+		
+		if (COLORPAT == null) {
+			COLORPAT = new Array();
+			for(i = 0;i < 360;i += 30) {
+				var col:uint = 0xFF000000 | HSVtoRGB(i, 0.75, 1.0);
+				COLORPAT.push(col);
+			}
+		}
 
 		var rect:Rectangle = new Rectangle(0, 0, IWIDTH, IHEIGHT);
 		for(i = 0;i < COLORPAT.length;i++) {
 			var bmdata:BitmapData = new BitmapData(IWIDTH, IHEIGHT);
-			bmdata.fillRect(rect, 0xFF000000 | COLORPAT[i]);
+			bmdata.fillRect(rect, COLORPAT[i]);
 			bmdList.push(bmdata);
 		}
 			
 		for(i = 0;i < MAXOBJ;i++) {
 			var bitmap:Bitmap = new Bitmap();
+			bitmap.pixelSnapping = PixelSnapping.ALWAYS;
 			bitmap.bitmapData = bmdList[i % bmdList.length];
 			bmList.push(bitmap);
 			addChild(bitmap);
@@ -118,7 +138,7 @@ class BenchBase extends Sprite {
 		
 		if (!inited) init();
 
-		startTime = getTime();
+		startTime = getTimer();
 		for(i = 0;i < bmList.length;i++) {
 			var mc:DisplayObject = bmList[i];
 			mc.x = -IWIDTH;
@@ -147,38 +167,66 @@ class BenchBase extends Sprite {
 		frame++;
 	}
 
-	private function getTime():Number {
-		var date:Date = new Date();
-		return date.time;
-	}
-
 	protected function countDone(dummy:* = null):void {
 		if (!stage) return;
 		dummy; // dummy
 		count++;
 		if (count < MAXOBJ) return;
 		removeEventListener(Event.ENTER_FRAME, enterFrameHandler);
-		var endTime:Number = getTime();
+		var endTime:Number = getTimer();
 		var spendTime:Number = (endTime - startTime) / 1000;
 		fps = Math.round(frame / spendTime * 100) / 100;
 		dispatchEvent(new Event(Event.COMPLETE));
 	}
+
+	private function HSVtoRGB(h:Number, s:Number, v:Number):uint {
+		var rgb:uint = 0;
+		var hi:uint = Math.floor(h / 60.0) % 6;
+		var f:Number = h / 60.0 - hi;
+		var vv:uint = Math.round(255 * v);
+		var pp:uint = Math.round(255 * v * ( 1 - s ));
+		var qq:uint = Math.round(255 * v * ( 1 - f * s ));
+		var tt:uint = Math.round(255 * v * ( 1 - (1 - f) * s ));
+		if ( vv > 255 ) vv = 255;
+		if ( pp > 255 ) pp = 255;
+		if ( qq > 255 ) qq = 255;
+		if ( tt > 255 ) tt = 255;
+		switch (hi) {
+			case 0: 
+				rgb = (vv << 16) | (tt << 8) | pp; 
+				break;
+			case 1: 
+				rgb = (qq << 16) | (vv << 8) | pp; 
+				break;
+			case 2: 
+				rgb = (pp << 16) | (vv << 8) | tt; 
+				break;
+			case 3: 
+				rgb = (pp << 16) | (qq << 8) | vv; 
+				break;
+			case 4: 
+				rgb = (tt << 16) | (pp << 8) | vv; 
+				break;
+			case 5: 
+				rgb = (vv << 16) | (pp << 8) | qq; 
+				break;
+		}
+		return rgb;
+	}
 }
 
 class BenchKTween extends BenchBase {
-	import net.kawa.tween.KTJob;
 	import net.kawa.tween.KTween;
 	import net.kawa.tween.easing.Linear;
 	protected override function runTween(mc:DisplayObject, lastY:Number, secs:Number):void {
-		var tween:KTJob = KTween.to(mc, secs, {x: SWIDTH, y: lastY}, Linear.easeOut, countDone);
-		tween.round = true;
+		KTween.to(mc, secs, {x: SWIDTH, y: lastY}, Linear.easeOut, countDone);
 	}
 }
 
 class BenchTweener extends BenchBase {
 	import caurina.transitions.Tweener;
 	protected override function runTween(mc:DisplayObject, lastY:Number, secs:Number):void {
-		Tweener.addTween(mc, {x: SWIDTH, y:lastY, time: secs, rounded: true, transition: "linear", onComplete: countDone});
+		Tweener.addTween(mc, {x: SWIDTH, y:lastY, time: secs, transition: "linear", onComplete: countDone});
 	}
 }
 
@@ -186,8 +234,6 @@ class BenchTweenNano extends BenchBase {
 	import com.greensock.TweenNano;
 	import com.greensock.easing.Linear;
 	protected override function runTween(mc:DisplayObject, lastY:Number, secs:Number):void {
-		// TweenNano doesn't have the roundProps feature.
-		// TweenMax.to(mc, secs, {x: SWIDTH, y:lastY, roundProps:["x","y"], ease:Linear.easeNone, onComplete:countDone});
 		TweenNano.to(mc, secs, {x: SWIDTH, y:lastY, ease:Linear.easeNone, onComplete:countDone});
 	}
 }
@@ -198,8 +244,6 @@ class BenchGTween extends BenchBase {
 	import com.gskinner.motion.easing.Linear;
 	protected override function runTween(mc:DisplayObject, lastY:Number, secs:Number):void {
 		var tween:GTween = GTweener.to(mc, secs, {x: SWIDTH, y:lastY}, {ease:Linear.easeNone});
-		// tween.roundValues = true; // the feature lost?
-		// tween.useSnapping = true;
 		tween.onComplete = countDone;
 	}
 }
@@ -213,5 +257,13 @@ class BenchBetweenAS3 extends BenchBase {
 		var tween:IObjectTween = BetweenAS3.tween(mc, {x: SWIDTH, y:lastY}, null, secs, Linear.easeNone);
 		tween.addEventListener(TweenEvent.COMPLETE, countDone);
 		tween.play();
+	}
+}
+
+class BenchEazeTween extends BenchBase {
+	import aze.motion.eaze;
+	import aze.motion.easing.Linear;
+	protected override function runTween(mc:DisplayObject, lastY:Number, secs:Number):void {
+		eaze(mc).to(secs, {x: SWIDTH, y:lastY}).easing(Linear.easeNone).onComplete(countDone);
 	}
 }
