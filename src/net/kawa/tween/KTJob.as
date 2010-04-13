@@ -215,10 +215,9 @@
 		}
 
 		private function applyFirstValues():void {
-			var p:_KTProperty = firstProp;
-			while (p != null) {
+			var p:_KTProperty;
+			for(p = firstProp;p != null;p = p.next) {
 				target[p.key] = p.from;
-				p = p.next;
 			}
 			if (onChange is Function) {
 				onChange.apply(onChange, onChangeParams);
@@ -230,10 +229,9 @@
 		}
 
 		private function applyFinalValues():void {
-			var p:_KTProperty = firstProp;
-			while (p != null) {
+			var p:_KTProperty;
+			for(p = firstProp;p != null;p = p.next) {
 				target[p.key] = p.to;
-				p = p.next;
 			}
 			if (onChange is Function) {
 				onChange.apply(onChange, onChangeParams);
@@ -283,34 +281,25 @@
 					return;
 				}
 			}
-			
+
 			// tweening
 			var pos:Number = secs / duration;
 			if (reverse) {
 				pos = 1 - pos;
 			}
-			if (ease != null) {
+			if (ease is Function) {
 				pos = ease(pos);
 			}
-			update(pos);
-		}
-
-		/**
-		 * @private
-		 */
-		protected function update(pos:Number):void {
-			if (firstProp == null) return;
-
-			var p:_KTProperty = firstProp;
+			
+			// update
+			var p:_KTProperty;
 			if (round) {
-				while (p != null) {
+				for(p = firstProp;p != null;p = p.next) {
 					target[p.key] = Math.round(p.from + p.diff * pos);
-					p = p.next;
 				}
 			} else {
-				while (p != null) {
+				for(p = firstProp;p != null;p = p.next) {
 					target[p.key] = p.from + p.diff * pos;
-					p = p.next;
 				}
 			}
 			if (onChange is Function) {

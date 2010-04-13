@@ -65,26 +65,6 @@
 		}
 
 		private function enterFrameHandler(e:Event):void {
-			// close jobs finished
-			var prev:KTJob = null;
-			var job:KTJob = firstJob;
-			while (job != null) {
-				if (job.finished) {
-					if (prev == null) {
-						firstJob = job.next;
-					} else {
-						prev.next = job.next;
-					}
-					if (job.next == null) {
-						lastJob = prev;
-					}
-					job.close();
-				} else {
-					prev = job;
-				}
-				job = job.next;
-			}
-
 			// check new jobs added
 			if (firstAdded != null) {
 				mergeList();
@@ -96,16 +76,24 @@
 				return;
 			}
 			
-			// tick
-			step();
-		}
-
-		private function step():void {
 			var curTime:Number = getTimer();
+			var prev:KTJob = null;
 			var job:KTJob = firstJob;
-			while (job != null) {
-				job.step(curTime);
-				job = job.next;
+			for(job = firstJob;job != null;job = job.next) {
+				if (job.finished) {
+					if (prev == null) {
+						firstJob = job.next;
+					} else {
+						prev.next = job.next;
+					}
+					if (job.next == null) {
+						lastJob = prev;
+					}
+					job.close();
+				} else {
+					job.step(curTime);
+					prev = job;
+				}
 			}
 		}
 
@@ -115,10 +103,9 @@
 		 */
 		public function abort():void {
 			mergeList();
-			var job:KTJob = firstJob;
-			while (job != null) {
+			var job:KTJob;
+			for(job = firstJob;job != null;job = job.next) {
 				job.abort();
-				job = job.next;
 			}
 		}
 
@@ -128,10 +115,9 @@
 		 */
 		public function cancel():void {
 			mergeList();
-			var job:KTJob = firstJob;
-			while (job != null) {
+			var job:KTJob;
+			for(job = firstJob;job != null;job = job.next) {
 				job.cancel();
-				job = job.next;
 			}
 		}
 
@@ -141,10 +127,9 @@
 		 */
 		public function complete():void {
 			mergeList();
-			var job:KTJob = firstJob;
-			while (job != null) {
+			var job:KTJob;
+			for(job = firstJob;job != null;job = job.next) {
 				job.complete();
-				job = job.next;
 			}
 		}
 
@@ -154,10 +139,9 @@
 		 */
 		public function pause():void {
 			mergeList();
-			var job:KTJob = firstJob;
-			while (job != null) {
+			var job:KTJob;
+			for(job = firstJob;job != null;job = job.next) {
 				job.pause();
-				job = job.next;
 			}
 		}
 
@@ -167,10 +151,9 @@
 		 */
 		public function resume():void {
 			// mergeList(); // this isn't needed
-			var job:KTJob = firstJob;
-			while (job != null) {
+			var job:KTJob;
+			for(job = firstJob;job != null;job = job.next) {
 				job.resume();
-				job = job.next;
 			}
 		}
 

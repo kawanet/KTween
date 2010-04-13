@@ -66,8 +66,8 @@ package {
 			textField.appendText(canvas.fps + ' fps\n');
 			// the first tween may take time
 			if (count == 1) {
-				var debug:String = Capabilities.isDebugger ? ' (debugger)' : '';
-				textField.text = Capabilities.version + debug + '\n';
+				var debug:String = Capabilities.isDebugger ? ' Debugger' : '';
+				textField.text = Capabilities.version + ' '+ Capabilities.playerType + debug + '\n';
 			}
 			
 			// remove test sprite
@@ -89,11 +89,11 @@ import flash.display.Bitmap;
 import flash.display.Sprite;
 
 class BenchBase extends Sprite {
-	private static const MAXOBJ:Number = 4000;
+	private static const MAXOBJ:Number = 2000;
 	protected static const SWIDTH:Number = 320;
 	protected static const SHEIGHT:Number = 480;
-	protected static const IWIDTH:Number = 8;
-	protected static const IHEIGHT:Number = 8;
+	protected static const IWIDTH:Number = 4;
+	protected static const IHEIGHT:Number = 4;
 	protected static const MINSEC:Number = 2;
 	protected static const MAXSEC:Number = 6;
 	private static var COLORPAT:Array;
@@ -114,7 +114,7 @@ class BenchBase extends Sprite {
 		if (COLORPAT == null) {
 			COLORPAT = new Array();
 			for(i = 0;i < 360;i += 30) {
-				var col:uint = 0xFF000000 | HSVtoRGB(i, 0.75, 1.0);
+				var col:uint = 0xFF000000 | HSVtoRGB(i, 0.5, 1.0);
 				COLORPAT.push(col);
 			}
 		}
