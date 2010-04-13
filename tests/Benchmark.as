@@ -18,15 +18,14 @@ package {
 		private var count:Number = 0;
 
 		public function Benchmark():void {
-			// classList = [BenchKTween, BenchTweener, BenchTweenNano, BenchGTween, BenchBetweenAS3, BenchEazeTween];
-			classList = [BenchKTween, BenchBetweenAS3, BenchEazeTween];
-			// classList = [BenchKTween, BenchEazeTween];
+			classList = [BenchKTween, BenchTweener, BenchTweenNano, BenchGTween, BenchBetweenAS3, BenchEazeTween];
+			// classList = [BenchKTween, BenchBetweenAS3, BenchEazeTween];
 			// classList = [BenchKTween];
 			addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
 		}
 
 		private function addedToStageHandler(event:Event):void {
-			var textFormat:TextFormat = new TextFormat('_sans', 12);
+			var textFormat:TextFormat = new TextFormat('_sans', 14);
 			textField = new TextField();
 			textField.width = stage.stageWidth;
 			textField.height = stage.stageHeight;
@@ -89,7 +88,7 @@ import flash.display.Bitmap;
 import flash.display.Sprite;
 
 class BenchBase extends Sprite {
-	private static const MAXOBJ:Number = 2000;
+	private static const MAXOBJ:Number = 4000;
 	protected static const SWIDTH:Number = 320;
 	protected static const SHEIGHT:Number = 480;
 	protected static const IWIDTH:Number = 4;

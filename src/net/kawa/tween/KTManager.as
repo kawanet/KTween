@@ -30,8 +30,8 @@
 		/**
 		 * Regists a new tween job to the job queue.
 		 *
-		 * @param job 		A job to be added to queue
-		 * @param delay 	
+		 * @param job 		A job to be added to queue.
+		 * @param delay 	Delay until job started in seconds.
 		 **/
 		public function queue(job:KTJob, delay:Number = 0):void {
 			if (delay > 0) {

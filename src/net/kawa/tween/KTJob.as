@@ -142,6 +142,11 @@
 		 * Arguments for onCancel callback function.
 		 */
 		public var onCancelParams:Array;
+		/**
+		 * The next tween job instance managed by KTManager. Do not modify this.
+		 * @see net.kawa.tween.KTManager
+		 */
+		public var next:KTJob;
 		private var reverse:Boolean = false;
 		private var initialized:Boolean = false;
 		private var canceled:Boolean = false;
@@ -150,7 +155,6 @@
 		private var lastTime:Number;
 		private var firstProp:_KTProperty;
 		private var invokeEvent:Boolean = false;
-		public var next:KTJob;
 
 		/**
 		 * Constructs a new KTJob instance.
@@ -164,7 +168,7 @@
 		/**
 		 * Initializes from/to values of the tween job.
 		 * @param curTime The current time in milliseconds given by getTimer() method. Optional.
-		 * @see flash.utils.#getTimer()
+		 * @see flash.utils#getTimer()
 		 */
 		public function init(curTime:Number = -1):void {
 			if (initialized) return;
@@ -245,7 +249,7 @@
 		/**
 		 * Steps the sequence by every ticks invoked by ENTER_FRAME event.
 		 * @param curTime The current time in milliseconds given by getTimer() method. Optional.
-		 * @see flash.utils.#getTimer()
+		 * @see flash.utils#getTimer()
 		 */
 		public function step(curTime:Number = -1):void {
 			if (finished) return;

@@ -86,8 +86,8 @@ package net.kawa.tween {
 		/**
 		 * Regists a new tween job to the job queue.
 		 *
-		 * @param job 		A job to be added to queue
-		 * @param delay 	
+		 * @param job 		A job to be added to queue.
+		 * @param delay 	Delay until job started in seconds.
 		 * @throws ArgumentError A Function instance is not allowed for the .from or .to property.
 		 **/
 		static public function queue(job:KTJob, delay:Number = 0):void {
