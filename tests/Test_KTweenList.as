@@ -4,7 +4,7 @@ package {
 
 	import net.kawa.tween.easing.*;
 
-	[SWF(width="1000",height="510",frameRate="30",backgroundColor="#FFFFFF")]
+	[SWF(width="1000",height="610",frameRate="30",backgroundColor="#FFFFFF")]
 
 	/**
 	 * @author Yusuke Kawasaki
@@ -21,18 +21,20 @@ package {
 			var cubic:TestEaseLine = new TestEaseLine(net.kawa.tween.easing.Cubic, 300);
 			var quart:TestEaseLine = new TestEaseLine(net.kawa.tween.easing.Quart, 400);
 			var quint:TestEaseLine = new TestEaseLine(net.kawa.tween.easing.Quint, 500);
-			var circ:TestEaseLine = new TestEaseLine(net.kawa.tween.easing.Circ, 600);
-			var elastic:TestEaseLine = new TestEaseLine(net.kawa.tween.easing.Elastic, 700);
-			var bounce:TestEaseLine = new TestEaseLine(net.kawa.tween.easing.Bounce, 800);
-			var back:TestEaseLine = new TestEaseLine(net.kawa.tween.easing.Back, 900);
+			var expo:TestEaseLine = new TestEaseLine(net.kawa.tween.easing.Expo, 600);
+			var circ:TestEaseLine = new TestEaseLine(net.kawa.tween.easing.Circ, 700);
+			var elastic:TestEaseLine = new TestEaseLine(net.kawa.tween.easing.Elastic, 800);
+			var bounce:TestEaseLine = new TestEaseLine(net.kawa.tween.easing.Bounce, 900);
+			var back:TestEaseLine = new TestEaseLine(net.kawa.tween.easing.Back, 1000);
 			
 			addChild(linear);
 			addChild(sine);
 			addChild(cubic);
 			addChild(quad);
 			addChild(quart);
-			
 			addChild(quint);
+
+			addChild(expo);
 			addChild(circ);
 			addChild(elastic);
 			addChild(back);
@@ -43,14 +45,15 @@ package {
 			quad.y = 210;
 			cubic.y = 310;
 			quart.y = 410;
+			quint.y = 510;
 
-			quint.y = 10;
+			expo.y = 10;
 			circ.y = 110;
 			elastic.y = 210;
 			bounce.y = 310;
 			back.y = 410;
 			
-			quint.x = 500;
+			expo.x = 500;
 			circ.x = 500;
 			elastic.x = 500;
 			bounce.x = 500;
